@@ -164,20 +164,28 @@
   </style>
 </head>
 <body>
+  <div class="header">
+    <h1>✨大眼的欧气召唤机✨</h1>
+    <div class="subtitle">大眼祝各位老师欧气满满满满满满！</div>
+    <div class="subnote">大眼灯拆卡&学分聚集地拆卡专属</div>
+  </div>
+
+  <div class="top-bar">
+    <button class="toggle-btn" onclick="toggleMode()">切换模式</button>
+  </div>
 
   <div class="container" id="randomContainer">
-  <div class="result-display" id="numberResult">🎯 结果区</div>
-  <div class="inputs">
-    <input type="number" id="min" placeholder="最小值" value="1">
-    <input type="number" id="max" placeholder="最大值" value="40">
+    <div class="result-display" id="numberResult">🎯 结果区</div>
+    <div class="inputs">
+      <input type="number" id="min" placeholder="最小值" value="1">
+      <input type="number" id="max" placeholder="最大值" value="40">
+    </div>
+    <input type="number" id="count" placeholder="生成几个" class="count-input" value="5">
+    <button class="btn" onclick="generate()">💫 欧气召唤</button>
+    <button class="history-toggle" onclick="toggleHistory()">📜 展开历史 ▼</button>
+    <div class="history" id="historyList"></div>
   </div>
-  <input type="number" id="count" placeholder="生成几个" class="count-input" value="5">
-  <button class="btn" onclick="generate()">💫 欧气召唤</button>
-  <button class="history-toggle" onclick="toggleHistory()">📜 展开历史 ▼</button>
-  <div class="history" id="historyList"></div>
-</div>
 
-  
   <div class="container hidden" id="wheelContainer">
     <div class="result-display" id="wheelResult">🎯 转盘结果区</div>
     <div class="wheel">
