@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>大眼的欧气召唤机</title>
+  <style>
+    body {
+      font-family: "Arial", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to top, #fffbe0, #ffffff);
+      color: #333;
+    }
+    .header {
+      padding: 20px;
+      background: #fff8d4;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .header h1 {
+      font-size: 26px;
+      color: #d4af37;
+      margin: 0;
+    }
+    .subtitle {
+      font-size: 16px;
+      color: #d4af37;
+      margin-top: 6px;
+    }
+    .subnote {
+      font-size: 13px;
+      color: #a08530;
+    }
+    .top-bar {
+      display: flex;
+      justify-content: flex-end;
+      padding: 10px 20px 0;
+    }
+    .toggle-btn {
+      background: #ffde59;
+      color: #5c4400;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+    .container {
+      max-width: 480px;
+      margin: 10px auto;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 -8px 40px rgba(255, 215, 0, 0.2);
+    }
+    .result-display {
+      font-size: 22px;
+      font-weight: bold;
+      text-align: center;
+      color: #b58900;
+      margin-bottom: 20px;
+    }
+    .inputs {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .inputs input, .count-input {
+      flex: 1;
+      padding: 10px;
+      font-size: 18px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .count-input {
+      width: 100%;
+      margin-bottom: 16px;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      font-size: 18px;
+      background: linear-gradient(to right, #ffd700, #ffbb33);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(255, 200, 0, 0.4);
+    }
+    .history {
+      font-size: 16px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+      border-top: 1px solid #eee;
+      padding-top: 10px;
+    }
+    .history.show {
+      max-height: 300px;
+    }
+    .history div {
+      margin-bottom: 6px;
+    }
+    .history-toggle {
+      background: none;
+      border: none;
+      color: #b58900;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .wheel {
+      width: 280px;
+      height: 280px;
+      margin: 10px auto 30px;
+      position: relative;
+    }
+    canvas {
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border: 5px solid #ffd700;
+      display: block;
+      margin: 0 auto;
+      transition: transform 4s cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+    .option-list {
+      margin-top: 10px;
+    }
+    .option-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .option-item input {
+      flex: 1;
+      padding: 8px;
+      font-size: 16px;
+      margin-right: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    .option-item button {
+      background: #ff6f00;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .add-btn {
+      background: #00c853;
+      margin-top: 10px;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>✨大眼的欧气召唤机✨</h1>
+    <div class="subtitle">大眼祝各位老师欧气满满满满满满！</div>
+    <div class="subnote">大眼灯拆卡&学分聚集地拆卡专属</div>
+  </div>
+
+  <div class="top-bar">
+    <button class="toggle-btn" onclick="toggleMode()">切换模式</button>
+  </div>
+
+  <!-- 随机数功能 -->
+  <div class="container" id="randomContainer">
+    <div class="result-display" id="numberResult">🎯 结果区</div>
+    <div class="inputs">
+      <input type="number" id="min" placeholder="最小值" value="1">
+      <input type="number" id="max" placeholder="最大值" value="40">
+    </div>
+    <input type="number" id="count" placeholder="生成几个" class="count-input" value="5">
+    <button class="btn" onclick="generate()">💫 欧气召唤</button>
+    <button class="history-toggle" onclick="toggleHistory()">📜 展开历史 ▼</button>
+    <div class="history" id="historyList"></div>
+  </div>
+
+  <!-- 转盘功能 -->
+  <div class="container hidden" id="wheelContainer">
+    <div class="result-display" id="wheelResult">🎯 转盘结果区</div>
+    <div class="wheel">
+      <canvas id="wheel" width="280" height="280"></canvas>
+    </div>
+    <button class="btn" onclick="spin()">🎡 转起来！</button>
+    <div class="option-list" id="optionList"></div>
+    <button class="btn add-btn" onclick="addOption()">➕ 添加选项</button>
+  </div>
+
+  <script>
+    let showHistory = false;
+    let currentRotation = 0;
+    let spinning = false;
+    let mode = 'random';
+
+    function toggleMode() {
+      mode = mode === 'random' ? 'wheel' : 'random';
+      document.getElementById('randomContainer').classList.toggle('hidden', mode !== 'random');
+      document.getElementById('wheelContainer').classList.toggle('hidden', mode !== 'wheel');
+    }
+
+    function toggleHistory() {
+      showHistory = !showHistory;
+      const history = document.getElementById('historyList');
+      history.classList.toggle("show", showHistory);
+      event.target.innerText = showHistory ? "📜 收起历史 ▲" : "📜 展开历史 ▼";
+    }
+
+    function generate() {
+      const min = parseInt(document.getElementById('min').value);
+      const max = parseInt(document.getElementById('max').value);
+      const count = parseInt(document.getElementById('count').value);
+      if (isNaN(min) || isNaN(max) || isNaN(count) || min >= max || count <= 0 || count > (max - min + 1)) {
+        alert('请输入有效数字范围');
+        return;
+      }
+      const pool = [];
+      for (let i = min; i <= max; i++) pool.push(i);
+      const result = [];
+      while (result.length < count) {
+        const index = Math.floor(Math.random() * pool.length);
+        result.push(pool.splice(index, 1)[0]);
+      }
+      const time = new Date().toLocaleTimeString();
+      const resultStr = result.join('、');
+      document.getElementById('numberResult').innerText = `🎯 结果：${resultStr}`;
+      const entry = document.createElement('div');
+      entry.innerText = `${time} → ${resultStr}`;
+      document.getElementById('historyList').prepend(entry);
+    }
+
+    const canvas = document.getElementById('wheel');
+    const ctx = canvas.getContext('2d');
+    const radius = canvas.width / 2;
+
+    function getOptions() {
+      const inputs = document.querySelectorAll('.option-list input');
+      return Array.from(inputs).map(i => i.value.trim()).filter(v => v);
+    }
+
+    function drawWheel() {
+      const options = getOptions();
+      const anglePer = 2 * Math.PI / options.length;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < options.length; i++) {
+        const start = i * anglePer;
+        const end = start + anglePer;
+        ctx.beginPath();
+        ctx.moveTo(radius, radius);
+        ctx.arc(radius, radius, radius, start, end);
+        ctx.fillStyle = `hsl(${(i * 360 / options.length)}, 90%, 75%)`;
+        ctx.fill();
+        ctx.save();
+        ctx.translate(radius, radius);
+        ctx.rotate(start + anglePer / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#333";
+        ctx.font = "14px Arial";
+        ctx.fillText(options[i], radius - 10, 6);
+        ctx.restore();
+      }
+    }
+
+    function spin() {
+      const options = getOptions();
+      if (spinning || options.length === 0) return;
+      spinning = true;
+      const target = Math.floor(Math.random() * options.length);
+      const anglePer = 360 / options.length;
+      const stopDeg = 360 * 5 + (360 - (target * anglePer + anglePer / 2));
+      canvas.style.transition = 'transform 4s cubic-bezier(0.25, 0.1, 0.25, 1)';
+      canvas.style.transform = `rotate(${currentRotation + stopDeg}deg)`;
+      setTimeout(() => {
+        document.getElementById('wheelResult').innerText = `🎯 转盘结果：${options[target]}`;
+        currentRotation += stopDeg;
+        spinning = false;
+      }, 4000);
+    }
+
+    function addOption(value = '') {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'option-item';
+      wrapper.innerHTML = `
+        <input type="text" value="${value}" placeholder="请输入选项" />
+        <button onclick="this.parentNode.remove(); drawWheel()">➖</button>
+      `;
+      document.getElementById('optionList').appendChild(wrapper);
+      drawWheel();
+    }
+
+    const defaultOptions = ['再来一次','100分','欧皇','保底','招财进宝','666'];
+    defaultOptions.forEach(opt => addOption(opt));
+  </script>
+</body>
+</html>
